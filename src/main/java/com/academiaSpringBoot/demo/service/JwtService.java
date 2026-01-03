@@ -13,7 +13,6 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // 🔐 Chave secreta (mínimo 256 bits)
     private static final String SECRET =
             "minha-chave-secreta-super-segura-com-mais-de-32-caracteres";
 
@@ -21,7 +20,6 @@ public class JwtService {
 
     private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    // 🔑 GERA TOKEN
     public String generateToken(User user) {
 
         return Jwts.builder()
@@ -32,7 +30,6 @@ public class JwtService {
                 .compact();
     }
 
-    // 🔍 EXTRAI USER ID
     public Long getUserIdFromToken(String token) {
 
         Claims claims = Jwts.parserBuilder()

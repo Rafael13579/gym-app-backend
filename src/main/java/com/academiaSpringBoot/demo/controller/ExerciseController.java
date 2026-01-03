@@ -2,6 +2,7 @@ package com.academiaSpringBoot.demo.controller;
 
 import com.academiaSpringBoot.demo.createDTO.ExerciseCreateDTO;
 import com.academiaSpringBoot.demo.model.User;
+import com.academiaSpringBoot.demo.model.Workout;
 import com.academiaSpringBoot.demo.responseDTO.ExerciseResponseDTO;
 import com.academiaSpringBoot.demo.service.ExerciseService;
 import jakarta.validation.Valid;
@@ -25,11 +26,20 @@ public class ExerciseController {
 
     @PostMapping
     public ResponseEntity<ExerciseResponseDTO> addExercise(@RequestBody @Valid ExerciseCreateDTO dto, Authentication authentication) {
-
         User user = (User) authentication.getPrincipal();
+
         ExerciseResponseDTO exercise = exerciseService.create(user, dto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(exercise);
+    }
+
+    @DeleteMapping("/{exerciseId}")
+    public ResponseEntity<Void> deleteExercise(@PathVariable Long exerciseId, @PathVariable Long workoutId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        exerciseService.deleteExercise(workoutId, exerciseId, user);
+
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping

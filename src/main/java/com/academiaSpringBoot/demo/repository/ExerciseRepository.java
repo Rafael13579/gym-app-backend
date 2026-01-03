@@ -1,11 +1,18 @@
 package com.academiaSpringBoot.demo.repository;
 
 import com.academiaSpringBoot.demo.model.Exercise;
+import com.academiaSpringBoot.demo.model.User;
+import com.academiaSpringBoot.demo.model.Workout;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.*;
+
 
 
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findByWorkoutId(Long workoutId);
+
+    Optional<Exercise> findByWorkoutAndId(Workout workout, Long exerciseId);
+
+    Optional<Exercise> findByIdAndWorkoutUser(Long id, User user);
 }

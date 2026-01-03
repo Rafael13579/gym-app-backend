@@ -1,5 +1,6 @@
 package com.academiaSpringBoot.demo.service;
 
+import com.academiaSpringBoot.demo.exception.ResourceNotFoundException;
 import com.academiaSpringBoot.demo.model.User;
 import com.academiaSpringBoot.demo.model.Workout;
 import com.academiaSpringBoot.demo.createDTO.WorkoutCreateDTO;
@@ -7,7 +8,9 @@ import com.academiaSpringBoot.demo.repository.UserRepository;
 import com.academiaSpringBoot.demo.repository.WorkoutRepository;
 import com.academiaSpringBoot.demo.responseDTO.ExerciseResponseDTO;
 import com.academiaSpringBoot.demo.responseDTO.WorkoutResponseDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -24,9 +27,10 @@ public class WorkoutService {
 
     public WorkoutResponseDTO create(User user, WorkoutCreateDTO dto) {
 
-        Workout workout = new Workout();
-        workout.setName(dto.name());
-        workout.setUser(user);
+        Workout workout = Workout.builder()
+                        .name(dto.name())
+                        .user(user)
+                        .build();
 
         Workout saved = workoutRepository.save(workout);
 
@@ -44,6 +48,24 @@ public class WorkoutService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteWorkout(Long workoutId, User user) {
+        Workout workout = workoutRepository.findByUserAndId(user, workoutId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Workout not found"));
+
+        workoutRepository.delete(workout);
+    }
+
+    @Transactional
+    public WorkoutResponseDTO updateWorkoutName(Long workoutId, User user, String name) {
+        Workout workout = workoutRepository.findByUserAndId(user, workoutId)
+                .orElseThrow(() -> new ResourceNotFoundException("Workout not found"));
+
+        workout.setName(name);
+
+        return mapResponseToDTO(workout);
+    }
+
     public WorkoutResponseDTO mapResponseToDTO(Workout workout) {
         List<ExerciseResponseDTO> exercises = List.of();
 
@@ -54,6 +76,7 @@ public class WorkoutService {
                             ex.getId(),
                             ex.getName(),
                             ex.getMuscularGroup(),
+                            ex.getDescription(),
                             List.of()
                         )
                     ).toList();

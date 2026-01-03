@@ -31,9 +31,25 @@ public class WorkoutController {
 
     }
 
+    @DeleteMapping("/{workoutId}")
+    public ResponseEntity<Void> deleteWorkout(@PathVariable Long workoutId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        workoutService.deleteWorkout(workoutId, user);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{workoutId}")
+    public ResponseEntity<WorkoutResponseDTO> updateWorkoutName(@RequestBody @Valid WorkoutCreateDTO dto, @PathVariable Long workoutId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(workoutService.updateWorkoutName(workoutId, user, dto.name()));
+    }
+
     @GetMapping
     public ResponseEntity<List<WorkoutResponseDTO>> list(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
+
         return ResponseEntity.ok(workoutService.listByUser(user));
     }
 }
