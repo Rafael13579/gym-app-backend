@@ -93,12 +93,12 @@ mvn spring-boot:run
 `````
 
 
-##📌 Status do Projeto
+## 📌 Status do Projeto
 
 - ✅ Funcional
 - 🚧 Em evolução
 
-##Próximos passos planejados:
+## Próximos passos planejados:
 - Testes de integração
 - Autocomplete na busca de exercícios
 - Documentação com Swagger
@@ -106,8 +106,8 @@ mvn spring-boot:run
 - integração com IA
 
 
-###👨‍💻 Autor
-###Desenvolvido por Rafael Fernandes
-###Projeto para fins de estudo e portfólio backend.
+### 👨‍💻 Autor
+### Desenvolvido por Rafael Fernandes
+### Projeto para fins de estudo e portfólio backend.
 
   
