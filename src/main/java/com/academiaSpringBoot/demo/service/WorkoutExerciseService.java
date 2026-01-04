@@ -19,11 +19,7 @@ public class WorkoutExerciseService {
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public WorkoutExerciseService(
-            WorkoutExerciseRepository workoutExerciseRepository,
-            WorkoutRepository workoutRepository,
-            ExerciseRepository exerciseRepository
-    ) {
+    public WorkoutExerciseService(WorkoutExerciseRepository workoutExerciseRepository, WorkoutRepository workoutRepository, ExerciseRepository exerciseRepository) {
         this.workoutExerciseRepository = workoutExerciseRepository;
         this.workoutRepository = workoutRepository;
         this.exerciseRepository = exerciseRepository;

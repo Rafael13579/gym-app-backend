@@ -31,13 +31,13 @@ public class WorkoutService {
                 .build();
 
         Workout saved = workoutRepository.save(workout);
-        return mapToResponseDTO(saved);
+        return mapResponseToDTO(saved);
     }
 
     public List<WorkoutResponseDTO> listByUser(User user) {
         return workoutRepository.findByUser(user)
                 .stream()
-                .map(this::mapToResponseDTO)
+                .map(this::mapResponseToDTO)
                 .toList();
     }
 
@@ -48,7 +48,7 @@ public class WorkoutService {
                 .orElseThrow(() -> new ResourceNotFoundException("Workout not found"));
 
         workout.setName(name);
-        return mapToResponseDTO(workout);
+        return mapResponseToDTO(workout);
     }
 
     @Transactional
@@ -60,7 +60,7 @@ public class WorkoutService {
         workoutRepository.delete(workout);
     }
 
-    private WorkoutResponseDTO mapToResponseDTO(Workout workout) {
+    public WorkoutResponseDTO mapResponseToDTO(Workout workout) {
 
         List<WorkoutExerciseResponseDTO> exercises =
                 workout.getWorkoutExercises()
@@ -96,5 +96,7 @@ public class WorkoutService {
                 sets
         );
     }
+
+
 }
 

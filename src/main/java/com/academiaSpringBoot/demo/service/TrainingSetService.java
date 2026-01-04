@@ -99,6 +99,7 @@ public class TrainingSetService {
 
         trainingSetRepository.save(set);
 
+
         return mapToResponseDTO(set);
     }
 

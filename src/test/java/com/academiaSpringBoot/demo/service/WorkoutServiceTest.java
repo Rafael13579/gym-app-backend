@@ -46,7 +46,7 @@ public class WorkoutServiceTest {
 
         assertEquals(10L, savedWorkout.getId());
         assertEquals(workoutCreateDTO.name(), savedWorkout.getName());
-        assertTrue(savedWorkout.getExercises().isEmpty());
+        assertTrue(savedWorkout.getWorkoutExercises().isEmpty());
 
         verify(workoutRepository).save(any(Workout.class));
 
@@ -94,7 +94,7 @@ public class WorkoutServiceTest {
         Workout workout = new Workout();
         workout.setId(1L);
         workout.setName("Treino A");
-        workout.setExercises(List.of());
+        workout.setWorkoutExercises(List.of());
 
         WorkoutResponseDTO dto = workoutService.mapResponseToDTO(workout);
 
