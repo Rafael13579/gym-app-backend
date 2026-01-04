@@ -37,9 +37,9 @@ public class UserService {
         User saved = userRepository.save(user);
 
         return new UserResponseDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
+                saved.getId(),
+                saved.getEmail(),
+                saved.getName(),
                 List.of()
         );
     }

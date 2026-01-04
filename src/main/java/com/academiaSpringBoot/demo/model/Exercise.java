@@ -26,12 +26,8 @@ public class Exercise {
     @Column(nullable = false)
     private String description;
 
-    @JoinColumn(name = "workout_id", nullable = false)
-    @ManyToOne
-    private Workout workout;
 
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TrainingSet> sets;
-
+    @OneToMany(mappedBy = "exercise")
+    private List<WorkoutExercise> workouts;
 
 }

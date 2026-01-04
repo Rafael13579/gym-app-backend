@@ -12,52 +12,56 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("exercise/{exerciseId}/trainingSet")
 @CrossOrigin
+@RequestMapping
 public class TrainingSetController {
 
     private final TrainingSetService trainingSetService;
 
-    public TrainingSetController(TrainingSetService trainingSetService){
+    public TrainingSetController(TrainingSetService trainingSetService) {
         this.trainingSetService = trainingSetService;
     }
 
-    @PostMapping
-    public ResponseEntity<TrainingSetResponseDTO> createTrainingSet(@PathVariable Long exerciseId, @RequestBody @Valid TrainingSetCreateDTO dto, Authentication authentication) {
+    @PostMapping("/workouts/{workoutId}/exercises/{exerciseId}/sets")
+    public ResponseEntity<TrainingSetResponseDTO> create(@PathVariable Long workoutId, @PathVariable Long exerciseId, @RequestBody @Valid TrainingSetCreateDTO dto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(trainingSetService.create(exerciseId, dto, user));
+        TrainingSetResponseDTO response = trainingSetService.create(workoutId, exerciseId, dto, user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @DeleteMapping("/{trainingSetId}")
-    public ResponseEntity<Void> deleteTrainingSet(@PathVariable Long trainingSetId, @PathVariable Long exerciseId, Authentication authentication) {
+    @GetMapping("/workout-exercises/{workoutExerciseId}/sets")
+    public ResponseEntity<List<TrainingSetResponseDTO>> list(@PathVariable Long workoutExerciseId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
-        trainingSetService.deleteSet(exerciseId, trainingSetId, user);
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(trainingSetService.listByWorkoutExercise(workoutExerciseId, user));
     }
 
-    @PutMapping("/{trainingSetId}")
+    @PutMapping("/training-sets/{trainingSetId}/weight")
     public ResponseEntity<TrainingSetResponseDTO> updateWeight(@PathVariable Long trainingSetId, @RequestBody @Valid TrainingSetCreateDTO dto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(trainingSetService.updateWeight(trainingSetId, dto, user));
     }
 
-    @PutMapping("/trainingSetId")
+    @PutMapping("/training-sets/{trainingSetId}/reps")
     public ResponseEntity<TrainingSetResponseDTO> updateReps(@PathVariable Long trainingSetId, @RequestBody @Valid TrainingSetCreateDTO dto, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(trainingSetService.updateReps(trainingSetId, dto, user));
     }
 
-    @GetMapping
-    public ResponseEntity<List<TrainingSetResponseDTO>> listTrainingSets(@PathVariable Long exerciseId, Authentication authentication) {
+
+    @DeleteMapping("/workout-exercises/{workoutExerciseId}/sets/{trainingSetId}")
+    public ResponseEntity<Void> delete(@PathVariable Long workoutExerciseId, @PathVariable Long trainingSetId, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(trainingSetService.listByExercise(exerciseId, user));
-    }
+        trainingSetService.deleteSet(workoutExerciseId, trainingSetId, user);
 
+        return ResponseEntity.noContent().build();
+    }
 }
+

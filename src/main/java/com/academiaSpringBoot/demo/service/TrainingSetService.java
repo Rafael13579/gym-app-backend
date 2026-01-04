@@ -1,10 +1,8 @@
 package com.academiaSpringBoot.demo.service;
 
-import com.academiaSpringBoot.demo.model.Exercise;
-import com.academiaSpringBoot.demo.model.TrainingSet;
+import com.academiaSpringBoot.demo.model.*;
 import com.academiaSpringBoot.demo.createDTO.TrainingSetCreateDTO;
-import com.academiaSpringBoot.demo.model.User;
-import com.academiaSpringBoot.demo.model.Workout;
+import com.academiaSpringBoot.demo.repository.WorkoutExerciseRepository;
 import com.academiaSpringBoot.demo.repository.WorkoutRepository;
 import com.academiaSpringBoot.demo.responseDTO.TrainingSetResponseDTO;
 import com.academiaSpringBoot.demo.repository.ExerciseRepository;
@@ -19,30 +17,35 @@ import java.util.List;
 @Service
 public class TrainingSetService {
 
-    private final WorkoutRepository workoutRepository;
+    private final WorkoutExerciseRepository workoutExerciseRepository;
     private final TrainingSetRepository trainingSetRepository;
+    private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
 
-    public TrainingSetService(TrainingSetRepository trainingSetRepository, ExerciseRepository exerciseRepository, WorkoutRepository workoutRepository) {
+    public TrainingSetService(TrainingSetRepository trainingSetRepository, WorkoutRepository workoutRepository,  WorkoutExerciseRepository workoutExerciseRepository,  ExerciseRepository exerciseRepository) {
         this.trainingSetRepository = trainingSetRepository;
-        this.exerciseRepository = exerciseRepository;
         this.workoutRepository = workoutRepository;
+        this.workoutExerciseRepository = workoutExerciseRepository;
+        this.exerciseRepository = exerciseRepository;
     }
 
-    public TrainingSetResponseDTO create(Long exerciseId, TrainingSetCreateDTO dto, User user){
-        Exercise exercise = exerciseRepository.findByIdAndWorkoutUser(exerciseId, user)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
+    public TrainingSetResponseDTO create(Long workoutId, Long exerciseId, TrainingSetCreateDTO dto, User user){
+        Workout workout = workoutRepository.findByUserAndId(user, workoutId)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Workout not found"));
+
+        Exercise exercise = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
+
+        WorkoutExercise we = workoutExerciseRepository.findByWorkoutAndExercise(workout, exercise)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "WorkoutExercise not found"));
 
 
         TrainingSet set = TrainingSet.builder()
                 .weight(dto.weight())
                 .reps(dto.reps())
-                .exercise(exercise)
+                .workoutExercise(we)
                 .build();
 
-        if(!set.getExercise().getWorkout().getUser().equals(user)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed operation");
-        }
 
         TrainingSet saved = trainingSetRepository.save(set);
 
@@ -55,11 +58,11 @@ public class TrainingSetService {
     }
 
     @Transactional
-    public void deleteSet(Long exerciseId, Long trainingSetId, User user){
-        TrainingSet set = trainingSetRepository.findByIdAndExerciseWorkoutUser(trainingSetId, user)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "TrainingSet not found"));
+    public void deleteSet(Long workoutExerciseId, Long trainingSetId, User user){
+        TrainingSet set = trainingSetRepository.findById(trainingSetId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "TrainingSet not found"));
 
-        if(!set.getExercise().getId().equals(exerciseId) || !set.getExercise().getWorkout().getUser().equals(user)){
+        if(!set.getWorkoutExercise().getId().equals(workoutExerciseId) || !set.getWorkoutExercise().getWorkout().getUser().equals(user)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed operation");
         }
 
@@ -68,10 +71,11 @@ public class TrainingSetService {
 
     @Transactional
     public TrainingSetResponseDTO updateWeight(Long trainingSetId, TrainingSetCreateDTO dto, User user) {
-        TrainingSet set = trainingSetRepository.findByIdAndExerciseWorkoutUser(trainingSetId, user)
+
+        TrainingSet set = trainingSetRepository.findById(trainingSetId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Set not found"));
 
-        if(!set.getExercise().getWorkout().getUser().equals(user)){
+        if(!set.getWorkoutExercise().getWorkout().getUser().equals(user)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed operation");
         }
 
@@ -83,27 +87,33 @@ public class TrainingSetService {
     @Transactional
     public TrainingSetResponseDTO updateReps(Long trainingSetId, TrainingSetCreateDTO dto, User user) {
 
-        TrainingSet set = trainingSetRepository
-                .findByIdAndExerciseWorkoutUser(trainingSetId, user)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Set not found")
+        TrainingSet set = trainingSetRepository.findById(trainingSetId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Set not found")
                 );
 
+        if(!set.getWorkoutExercise().getWorkout().getUser().equals(user)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not allowed operation");
+        }
+
         set.setReps(dto.reps());
+
+        trainingSetRepository.save(set);
 
         return mapToResponseDTO(set);
     }
 
-    public List<TrainingSetResponseDTO> listByExercise(Long exerciseId, User user) {
+    public List<TrainingSetResponseDTO> listByWorkoutExercise(Long workoutExerciseId, User user) {
 
-        Exercise exercise = exerciseRepository
-                .findByIdAndWorkoutUser(exerciseId, user)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found")
-                );
+        WorkoutExercise we = workoutExerciseRepository.findById(workoutExerciseId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Exercise not found"));
 
-        return trainingSetRepository.findByExercise(exercise)
-                .stream()
+        if (!we.getWorkout().getUser().equals(user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        List<TrainingSet> set = trainingSetRepository.findByWorkoutExercise(we);
+
+        return set.stream()
                 .map(this::mapToResponseDTO)
                 .toList();
     }

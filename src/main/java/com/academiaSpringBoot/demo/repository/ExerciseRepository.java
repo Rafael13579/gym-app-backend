@@ -10,9 +10,5 @@ import java.util.*;
 
 
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
-    List<Exercise> findByWorkoutId(Long workoutId);
-
-    Optional<Exercise> findByWorkoutAndId(Workout workout, Long exerciseId);
-
-    Optional<Exercise> findByIdAndWorkoutUser(Long id, User user);
+    Optional<Exercise> findById(Long id);
 }
