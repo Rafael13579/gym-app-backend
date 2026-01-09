@@ -9,3 +9,30 @@
 - ResponseDTOs
 - JWT
 - Global Exception Handling
+
+## [1.2.0] - 2026-01-01
+### Added
+- Changes to the business rule
+
+## [1.3.0] - 2026-01-02
+### Added
+- CRUD methods
+- Controllers
+
+## [1.4.0] - 2026-01-03
+### Added
+- Global exception handler
+- Jwt authentication
+
+## [1.5.0] - 2026-01-04
+### Added
+- Pagination and sorting
+
+## [1.6.0] - 2026-01-06
+### Added
+- Swagger documentation
+- Minimal general adjustments
+
+## [1.7.0] - 2026-01-08
+### Added
+- Unite tests with JUnit and Mockito
