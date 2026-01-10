@@ -64,6 +64,25 @@ public class ExerciseService {
                 .getContent();
     }
 
+    public ExerciseResponseDTO partialUpdate(Long exerciseId, ExerciseCreateDTO dto) {
+        Exercise ex = exerciseRepository.findById(exerciseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Exercise not found"));
+
+        if(dto.name() != null) {
+            ex.setName(dto.name());
+        }
+
+        if(dto.muscularGroup() != null) {
+            ex.setMuscularGroup(dto.muscularGroup());
+        }
+
+        if(dto.description() != null) {
+            ex.setDescription(dto.description());
+        }
+
+        return mapResponseToDTO(ex);
+    }
+
     @Value("${app.upload.base-url}")
     private String baseUrl;
 

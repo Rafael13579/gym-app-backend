@@ -100,6 +100,17 @@ public class ExerciseController {
         return ResponseEntity.ok(exerciseService.autocompleteExercise(query));
     }
 
+    //UPDATE
+    @Operation(summary = "Atualização de atributos de exercíco", description = "Atualiza algum atributo do exercício")
+    @ApiResponses(
+            @ApiResponse(responseCode = "201", description = "Exercício atualizado com sucesso")
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/exerciseId")
+    public ResponseEntity<ExerciseResponseDTO> partialExerciseUpdate(@PathVariable Long exerciseId, ExerciseCreateDTO dto) {
+        return ResponseEntity.ok(exerciseService.partialUpdate(exerciseId, dto));
+    }
+
 }
 
 

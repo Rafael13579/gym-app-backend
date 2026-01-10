@@ -112,9 +112,8 @@ class ExerciseServiceTest {
     void shouldAutocompleteExercises() {
         Page<Exercise> page = new PageImpl<>(List.of(exercise));
 
-        when(exerciseRepository.findByNameStartingWithIgnoreCase(
-                eq("Ben"), any(Pageable.class))
-        ).thenReturn(page);
+        when(exerciseRepository.findByNameStartingWithIgnoreCase(eq("Ben"), any(Pageable.class)))
+                .thenReturn(page);
 
         List<ExerciseResponseDTO> result = exerciseService.autocompleteExercise(" Ben ");
 
