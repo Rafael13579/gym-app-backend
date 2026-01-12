@@ -36,3 +36,7 @@
 ## [1.7.0] - 2026-01-08
 ### Added
 - Unite tests with JUnit and Mockito
+
+## [1.8.0] - 2026-01-11
+### Added
+- Integration tests
